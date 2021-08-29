@@ -6,7 +6,7 @@
 # Required libraries:
 #   - discord.py -- https://discordpy.readthedocs.io/
 #   - discord-py-slash-command -- https://discord-py-slash-command.readthedocs.io/
-#   - requests -- https://docs.python-requests.org/
+#   - pyown -- https://pyowm.readthedocs.io/
 '''
 
 import discord
@@ -15,13 +15,13 @@ from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option, create_choice
 from discord.ext import commands
 from bartlekeys import my_discord_bot_token, my_openweather_api_key
-import requests
+from pyowm.owm import OWM 
 import datetime
 import time
 
 # the keys/tokens below should remain hidden from public view
 bot_token = my_discord_bot_token
-openweather_api_key = my_openweather_api_key
+owm = OWM(my_openweather_api_key)
 
 tz_min = -12 # inclusive
 tz_max = 14 # inclusive
@@ -71,10 +71,8 @@ async def timetest(ctx, tz: int):
     except Exception as err:
         # something went wrong
         print(err)
-        await ctx.send("Sorry, an error occured and I could not perform the function!")
+        await ctx.send("Sorry, an error occured and I could not perform the time function!")
 
-
-'''
 @slash.slash(name="weather",
             description="Bartleby will tell you the weather.",
             guild_ids=guild_ids,
@@ -82,8 +80,27 @@ async def timetest(ctx, tz: int):
                 create_option(
                     name="city",
                     description="Enter a city, to find out about it's current whether.",
-                    option_type=)])
-'''
+                    option_type=SlashCommandOptionType.STRING,
+                    required=True
+                    ),
+                create_option(
+                    name="country",
+                    description="Please enter the country code your city is in. (E.g. Canada = CA, Norway = NO)",
+                    option_type=SlashCommandOptionType.STRING,
+                    required=True)
+                ])
+async def weather(ctx, city: str, country: str):
+    try:
+        location_string = city + "," + country # required format = city,countrycode
+        mngr = owm.weather_manager()
+        observation = mngr.weather_at_place(location_string)
+        my_weather = observation.weather
+        temp_dict = my_weather.temperature("celsius")
+        await ctx.send(str(my_weather.detailed_status))
+        await ctx.send(str(temp_dict["temp"]))
+    except Exception as err:
+        print(err)
+        await ctx.send("Sorry, an error occured and I could not perform the weather function!")
 
 @slash.slash(name="logout",
             description="This logs Bartleby out of Discord.",
