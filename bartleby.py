@@ -97,7 +97,7 @@ async def weather(ctx, city: str, country: str):
         my_weather = observation.weather
         temp_dict = my_weather.temperature("celsius")
         await ctx.send(str(my_weather.detailed_status))
-        await ctx.send(str(temp_dict["temp"]))
+        await ctx.send(str(temp_dict["temp"]) + u"\N{DEGREE SIGN}C")
     except Exception as err:
         print(err)
         await ctx.send("Sorry, an error occured and I could not perform the weather function!")
