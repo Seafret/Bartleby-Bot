@@ -14,4 +14,4 @@ Bartleby is a simple Discord bot.
 ## Libraries Used
 * [discord.py](https://discordpy.readthedocs.io/)
 * [discord-py-slash-command](https://discord-py-slash-command.readthedocs.io/)
-* [pyown](https://pyowm.readthedocs.io/)
+* [pyowm](https://pyowm.readthedocs.io/)
